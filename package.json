@@ -1,0 +1,24 @@
+{
+  "name": "avera",
+  "version": "1.0.0",
+  "description": "AVERA — Educational Learning Website",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankitabose24/avera.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ankitabose24/avera/issues"
+  },
+  "homepage": "https://github.com/ankitabose24/avera#readme"
+}

@@ -4059,6 +4059,12 @@ footer {
     block;
 }
 
+.application-success.error {
+  background: #fde8e8;
+  color: #c81e1e;
+  border: 1px solid #f8b4b4;
+}
+
 
 /* =========================================================
    STOP BACKGROUND SCROLL

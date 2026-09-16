@@ -716,44 +716,176 @@ document.addEventListener(
 
 if (applicationForm) {
 
-  applicationForm.addEventListener(
-    "submit",
-    (event) => {
+  applicationForm.addEventListener("submit", async (event) => {
 
-      event.preventDefault();
+    event.preventDefault();
+
+    // =========================================
+    // GET APPLICATION FORM DATA
+    // =========================================
+
+    const formData = {
+      name: applicationForm.elements["name"].value.trim(),
+      email: applicationForm.elements["email"].value.trim(),
+      phone: applicationForm.elements["phone"].value.trim(),
+      course: applicationForm.elements["course"].value.trim(),
+      mode: applicationForm.elements["mode"].value.trim(),
+      message: applicationForm.elements["message"].value.trim()
+    };
 
 
-      if (applicationSuccess) {
+    // =========================================
+    // SUBMIT BUTTON
+    // =========================================
 
-        applicationSuccess.classList.add(
-          "show"
-        );
+    const submitButton =
+      applicationForm.querySelector('button[type="submit"]');
+
+    const originalText =
+      submitButton ? submitButton.textContent : "Submit Application";
+
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending...";
+    }
+
+
+    // =========================================
+    // DETERMINE API URL (VERCEL VS LOCAL)
+    // =========================================
+
+    const isLocalLiveServer =
+      window.location.protocol === "file:" ||
+      ((window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1") &&
+       window.location.port !== "" &&
+       window.location.port !== "3000" &&
+       window.location.port !== "5000");
+
+    const endpoint = isLocalLiveServer
+      ? "http://localhost:5000/api/contact"
+      : "/api/contact";
+
+
+    // =========================================
+    // SEND APPLICATION TO BACKEND
+    // =========================================
+
+    try {
+
+      const response = await fetch(
+        endpoint,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify(formData)
+        }
+      );
+
+
+      // =======================================
+      // READ SERVER RESPONSE
+      // =======================================
+
+      const result = await response.json();
+
+
+      // =======================================
+      // SUCCESS
+      // =======================================
+
+      if (response.ok && result.success) {
+
+        if (applicationSuccess) {
+
+          applicationSuccess.textContent =
+            "Application submitted successfully ✓";
+
+          applicationSuccess.classList.add("show");
+        }
+
+
+        applicationForm.reset();
+
+
+        setTimeout(() => {
+
+          if (applicationSuccess) {
+            applicationSuccess.classList.remove("show");
+          }
+
+          closeApplicationForm();
+
+        }, 2200);
 
       }
 
 
-      applicationForm.reset();
+      // =======================================
+      // SERVER / VALIDATION ERROR
+      // =======================================
 
+      else {
 
-      setTimeout(
-        () => {
+        if (applicationSuccess) {
 
-          if (applicationSuccess) {
+          applicationSuccess.textContent =
+            result.message ||
+            "Unable to send application.";
 
-            applicationSuccess.classList.remove(
-              "show"
-            );
+          applicationSuccess.classList.add("show");
+        }
 
-          }
+        console.error(
+          "Backend error:",
+          result
+        );
 
-
-          closeApplicationForm();
-
-        },
-        2200
-      );
+      }
 
     }
-  );
+
+
+    // =========================================
+    // CONNECTION ERROR
+    // =========================================
+
+    catch (error) {
+
+      console.error(
+        "Application submission error:",
+        error
+      );
+
+
+      if (applicationSuccess) {
+
+        applicationSuccess.textContent =
+          "Unable to connect to the server.";
+
+        applicationSuccess.classList.add("show");
+      }
+
+    }
+
+
+    // =========================================
+    // RESTORE BUTTON
+    // =========================================
+
+    if (submitButton) {
+
+      submitButton.disabled = false;
+
+      submitButton.textContent = originalText;
+
+    }
+
+  });
 
 }
