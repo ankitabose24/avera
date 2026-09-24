@@ -5,3 +5,4 @@ backend.zip
 backend/
 .DS_Store
 Thumbs.db
+.vscode/
